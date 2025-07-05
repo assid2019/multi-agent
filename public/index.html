@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multi-Tasking Agent</title>
+  <style>
+    body { font-family: sans-serif; background: linear-gradient(135deg,#667eea,#764ba2); color:#fff; padding:20px; min-height:100vh; }
+    .container { background:rgba(255,255,255,0.9); color:#333; border-radius:15px; padding:20px; max-width:600px; margin:auto; box-shadow:0 10px 20px rgba(0,0,0,0.2);}
+    input,button { padding:10px; margin:5px 0; width:100%; border-radius:5px; border:1px solid #ccc; font-size:1rem; }
+    button { background:#3498db; color:white; cursor:pointer; }
+    button:hover { background:#2980b9; }
+    .response { margin-top:20px; padding:10px; background:#eee; border-radius:5px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Multi-Tasking Agent</h1>
+    <input type="text" id="userInput" placeholder="Type or speak your command"/>
+    <button onclick="sendInput()">Send</button>
+    <button onclick="startVoice()">🎤 Voice</button>
+    <div class="response" id="agentResponse">Agent reply will show here.</div>
+  </div>
+  <script>
+    async function sendInput() {
+      const text = document.getElementById('userInput').value;
+      const memory = {};
+      const res = await fetch('/agent/nlp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, memory })
+      });
+      const data = await res.json();
+      document.getElementById('agentResponse').innerText = data.reply || JSON.stringify(data);
+      speak(data.reply);
+    }
+    function startVoice() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.onresult = function(event) {
+        document.getElementById('userInput').value = event.results[0][0].transcript;
+        sendInput();
+      };
+      recognition.start();
+    }
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utter);
+    }
+  </script>
+</body>
+</html>
