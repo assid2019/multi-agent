@@ -1,13 +1,15 @@
-import express from 'express';
+// router.js
+const express = require('express');
 const router = express.Router();
-import infoModule from './modules/info.js';
-import systemModule from './modules/system.js';
-import automationModule from './modules/automation.js';
-import aiModule from './modules/ai.js';
+const infoModule = require('./modules/info');
+const systemModule = require('./modules/system');
+const automationModule = require('./modules/automation');
+const aiModule = require('./modules/ai');
 
 router.post('/route', async (req, res) => {
   try {
     const { intent, entities, memory } = req.body;
+
     let result;
 
     switch (intent) {
@@ -34,4 +36,4 @@ router.post('/route', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
