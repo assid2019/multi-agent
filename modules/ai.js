@@ -1,3 +1,3 @@
-export async function handle(entities, memory) {
+exports.handle = async (entities, memory) => {
   return { reply: "AI module: nothing implemented yet." };
-}
+};

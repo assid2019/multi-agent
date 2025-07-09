@@ -1,12 +1,14 @@
-import axios from 'axios';
+const axios = require('axios');
 
-export async function process(text) {
+exports.process = async (text) => {
   let intent = null;
   let entities = [];
 
   if (/weather|forecast/i.test(text)) {
     intent = 'info_retrieval';
-    entities.push({ type: 'topic', value: 'weather' });
+    const cityMatch = text.match(/in ([a-zA-Z\s]+)/i);
+    const city = cityMatch ? cityMatch[1].trim() : 'Minneapolis';
+    entities.push({ type: 'location', value: city });
   } else if (/turn on|turn off|shutdown|restart/i.test(text)) {
     intent = 'system_control';
     entities.push({ type: 'command', value: text });
@@ -31,9 +33,11 @@ export async function process(text) {
           }
         }
       );
+
       const classification = response.data.choices[0].message.content;
       intent = 'ai_processing';
       entities.push({ type: 'classification', value: classification });
+
     } catch (err) {
       console.error(err);
       intent = 'ai_processing';
@@ -42,4 +46,4 @@ export async function process(text) {
   }
 
   return { intent, entities };
-}
+};
